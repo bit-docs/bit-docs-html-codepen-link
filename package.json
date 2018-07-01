@@ -1,0 +1,37 @@
+{
+  "name": "bit-docs-html-codepen-link",
+  "version": "1.0.0",
+  "description": "add a codepen link ",
+  "main": "index.js",
+  "scripts": {
+    "preversion": "npm test",
+    "test": "mocha test.js --reporter spec",
+    "release:pre": "npm version prerelease && npm publish --tag=pre",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bit-docs/bit-docs-html-codepen-link.git"
+  },
+  "keywords": [
+    "bit-docs"
+  ],
+  "author": "Bitovi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bit-docs/bit-docs-html-codepen-link/issues"
+  },
+  "homepage": "https://github.com/bit-docs/bit-docs-html-codepen-link#readme",
+  "dependencies": {
+    "bit-docs-prettify": "^0.2.2-8",
+    "prismjs": "^1.11.0"
+  },
+  "devDependencies": {
+    "bit-docs-generate-html": "^0.1.0",
+    "connect": "^2.14.4",
+    "mocha": "^2.5.3",
+    "zombie": "^4.3.0"
+  }
+}
