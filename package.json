@@ -24,10 +24,7 @@
     "url": "https://github.com/bit-docs/bit-docs-html-codepen-link/issues"
   },
   "homepage": "https://github.com/bit-docs/bit-docs-html-codepen-link#readme",
-  "dependencies": {
-    "bit-docs-prettify": "^0.2.2-8",
-    "prismjs": "^1.11.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "bit-docs-generate-html": "^0.1.0",
     "connect": "^2.14.4",

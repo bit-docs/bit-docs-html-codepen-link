@@ -1,11 +1,3 @@
-require("bit-docs-prettify");
-
-require("prismjs/plugins/line-highlight/prism-line-highlight");
-require("prismjs/plugins/line-highlight/prism-line-highlight.css");
-
-
-
-
 var types = require("./codepen-data");
 var languageHTML = /language-(\w+)/;
 
