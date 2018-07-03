@@ -1,7 +1,9 @@
 
 exports.codepen = {
     add: function(line, curData, scope, docMap, defaultWriteProp, options) {
-        var html = "<div class='codepen'></div>";
+        // get the space before the line.  This is so descriptions will work right.
+        var space = line.substr(0, line.indexOf("@codepen"));
+        var html = space+"<div class='codepen'></div>";
         var validCurData =  (curData && curData.length !== 2);
         var useCurData = validCurData && (typeof curData.description === "string") && !curData.body;
 
@@ -11,7 +13,7 @@ exports.codepen = {
         }
 
         if(useCurData) {
-            curData.description += html;
+            curData.description += "\n"+html;
         } else {
             this.body += html;
         }
