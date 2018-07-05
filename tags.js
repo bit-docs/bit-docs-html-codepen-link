@@ -13,9 +13,9 @@ exports.codepen = {
         }
 
         if(useCurData) {
-            curData.description += "\n"+html;
+            curData.description += "\n"+html+"\n";
         } else {
-            this.body += html;
+            this.body += html+"\n";
         }
     }
 };
