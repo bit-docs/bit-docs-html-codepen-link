@@ -61,7 +61,9 @@ describe("bit-docs-html-codepen-link", function() {
                     {   html: '<my-app></my-app>',
                         js: 'import { Component } from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nComponent',
                         js_module: true,
-                        editors: '1011' },
+                        editors: '1011',
+						css: 'my-app {color: "green";}'
+					},
                     {   js: 'import {DefineMap} from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nconsole.log( myCounter.count ) //-> 1',
                         js_module: true,
                         editors: '0011' }

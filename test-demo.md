@@ -15,6 +15,9 @@
 import { Component } from "can";
 Component
 </script>
+<style>
+my-app {color: "green";}
+</style>
 ```
 <div class='codepen'></div>
 
