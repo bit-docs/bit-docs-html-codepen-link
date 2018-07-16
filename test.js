@@ -2,6 +2,7 @@ var assert = require("assert");
 var generate = require("bit-docs-generate-html/generate");
 var path = require("path");
 var fs = require("fs");
+var codepenData = require("./codepen-data");
 
 var Browser = require("zombie");
 var connect = require("connect");
@@ -73,5 +74,21 @@ describe("bit-docs-html-codepen-link", function() {
 				done();
 			}, done);
 		}, done);
+	});
+
+	it("is able to ignore scripts with sources", function(){
+		var data = codepenData.html(`
+			<mock-url></mock-url>
+			<bit-json-editor></bit-json-editor>
+			<script src="//unpkg.com/mock-url@^5.0.0" type="module"></script>
+			<script src="//unpkg.com/bit-json-editor@^5.0.0" type="module"></script>
+			<script type="module">
+			foo = "bar";
+			</script>
+			<style>
+			bit-json-editor { height: 200px; }
+			</style>
+		`);
+		assert.equal(data.js, 'foo = "bar";')
 	});
 });

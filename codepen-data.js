@@ -1,30 +1,32 @@
-var scriptRegExp = /<script\s([^>]+)>([\s\S]*?)<\/script>/i;
+var scriptRegExp = /<script\s([^>]+)>([\s\S]*?)<\/script>/ig;
 var styleRegExp = /<style>([\s\S]*?)<\/style>/i;
 var moduleTest = /type=["']module["']/;
+var srcTest = /src=/;
 var types = {
     html: function htmlType(text){
-        // test if a module script tag exists
-        var results = text.match(scriptRegExp);
-        if(results) {
-            var attrs = results[1];
-            if(moduleTest.test(attrs)) {
 
-                var HTML = text.replace(results[0],"").trim();
+        var result;
+
+        text.replace(scriptRegExp, function(match, attrs, code){
+            
+            if(moduleTest.test(attrs) && !srcTest.test(attrs)) {
+
+                var HTML = text.replace(match,"").trim();
 
                 var styleResults = HTML.match(styleRegExp);
                 if(styleResults) {
                     HTML = HTML.replace(styleResults[0],"").trim();
-                    return {
+                    result = {
                         html: HTML,
-                        js: results[2],
+                        js: code.trim(),
                         js_module: true,
                         editors: "1011",
                         css: styleResults[1].trim()
                     };
                 } else {
-                    return {
+                    result =  {
                         html: HTML,
-                        js: results[2],
+                        js: code.trim(),
                         js_module: true,
                         editors: "1011"
                     };
@@ -32,7 +34,8 @@ var types = {
 
 
             }
-        }
+        });
+        return result;
     },
     js: function (text){
         return {
