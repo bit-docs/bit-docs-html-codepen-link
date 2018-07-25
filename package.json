@@ -1,6 +1,6 @@
 {
   "name": "bit-docs-html-codepen-link",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "add a codepen link ",
   "main": "index.js",
   "scripts": {
