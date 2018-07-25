@@ -28,3 +28,6 @@ import {DefineMap} from "can";
 console.log( myCounter.count ) //-> 1
 ```
 <div class='codepen'></div>
+
+<div class='demo_wrapper' data-demo-src='foo.html'></div>
+<div class='codepen'></div>

@@ -8,7 +8,7 @@ var Browser = require("zombie");
 var connect = require("connect");
 
 var open = function(url, callback, done) {
-	var server = connect().use(connect.static(path.join(__dirname, "temp"))).listen(8081);
+	var server = connect().use(connect.static(path.join(__dirname))).listen(8081);
 	var browser = new Browser();
 	browser.visit("http://localhost:8081/" + url)
 		.then(function() {
@@ -22,7 +22,7 @@ var open = function(url, callback, done) {
 };
 
 describe("bit-docs-html-codepen-link", function() {
-	it("basics works", function(done) {
+	it.only("basics works", function(done) {
 		this.timeout(60000);
 
 		var docMap = Promise.resolve({
@@ -39,7 +39,8 @@ describe("bit-docs-html-codepen-link", function() {
 		generate(docMap, {
 			html: {
 				dependencies: {
-					"bit-docs-html-codepen-link": __dirname
+					"bit-docs-html-codepen-link": __dirname,
+					"bit-docs-tag-demo": "^0.5.3"
 				}
 			},
 			dest: path.join(__dirname, "temp"),
@@ -47,7 +48,7 @@ describe("bit-docs-html-codepen-link", function() {
 			forceBuild: true,
 			minifyBuild: false
 		}).then(function() {
-			open("index.html",function(browser, close) {
+			open("temp/index.html",function(browser, close) {
 				var doc = browser.window.document;
                 var createCallData = [];
                 browser.window.CREATE_CODE_PEN = function(data){
