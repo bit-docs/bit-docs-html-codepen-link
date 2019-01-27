@@ -1,6 +1,12 @@
 var types = require("./codepen-data");
 var languageHTML = /language-(\w+)/;
 
+var assign = Object.assign || function(d, s) {
+    for(var prop in s) {
+        d[prop] = s[prop];
+    }
+    return d;
+};
 
 function cleanCodePenData(data) {
     if(docObject.codepen) {
@@ -13,6 +19,13 @@ function cleanCodePenData(data) {
 }
 
 function createCodePen(data) {
+    if(data.html) {
+        // HTML needs to be escaped because put this in the page
+        data = assign({}, data);
+        data.html = data.html.replace(/&/g,"&amp;")
+                .replace(/</g,"&lt;")
+                .replace(/>/g,"&gt;");
+    }
 
     var JSONstring =
       JSON.stringify(data)
@@ -22,13 +35,12 @@ function createCodePen(data) {
 
 
     var form =  '<form action="https://codepen.io/pen/define" method="POST" target="_blank">' +
-        '<input type="hidden" name="data" value=\'' +
-        JSONstring +
-        '\'>' +
+        '<input type="hidden" name="data">' +
     '</form>';
 
     var div = document.createElement("div");
     div.innerHTML = form;
+    div.firstChild.firstChild.value = JSONstring;
     document.body.appendChild(div);
     div.firstChild.submit();
     setTimeout(function(){
