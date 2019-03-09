@@ -5,6 +5,9 @@ var languageHTML = /language-(\w+)/;
 function cleanCodePenData(data) {
     if(docObject.codepen) {
         docObject.codepen.forEach(function(replacement){
+            if(data.html) {
+                data.html = data.html.split(replacement[0]).join(replacement[1]);
+            }
             if(data.js) {
                 data.js = data.js.split(replacement[0]).join(replacement[1]);
             }
@@ -115,6 +118,10 @@ module.exports = function() {
                 }
                 if(data.html) {
                     data.html = data.html.trim();
+                    if (data.js) {
+                      data.html += "\n\n<script type=\"module\">\n" + data.js + "\n</script>";
+                      data.js = "";
+                    }
                 }
                 if(data) {
                     cleanCodePenData(data);
@@ -134,6 +141,10 @@ module.exports = function() {
 
                 var jsCode = el.querySelector("[data-for=js] code");
                 var jsText = jsCode ? jsCode.textContent.trim() : "";
+                if (jsText) {
+                    htmlText += "\n<script type=\"module\">\n" + jsText + "\n</script>";
+                    jsText = "";
+                }
 
                 var cssText = getStylesFromIframe( el.querySelector("iframe") );
 
