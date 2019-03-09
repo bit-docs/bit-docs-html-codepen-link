@@ -110,6 +110,10 @@ module.exports = function() {
                 }
                 if(data.html) {
                     data.html = data.html.trim();
+                    if (data.js) {
+                        data.html += "\n\n<script type=\"module\">\n" + data.js + "\n</script>";
+                        data.js = "";
+                    }
                 }
                 if(data) {
                     if(window.CREATE_CODE_PEN) {
@@ -123,11 +127,14 @@ module.exports = function() {
                 }
             }
             if(el && matches.call(el, ".demo_wrapper")) {
-                var htmlCode = el.querySelector("[data-for=html] code");
-                var htmlText = htmlCode ? htmlCode.textContent.trim() : "";
-
                 var jsCode = el.querySelector("[data-for=js] code");
                 var jsText = jsCode ? jsCode.textContent.trim() : "";
+
+                var htmlCode = el.querySelector("[data-for=html] code");
+                var htmlText = htmlCode ? htmlCode.textContent.trim() : "";
+                if (jsText) {
+                    htmlText += "\n\n<script type=\"module\">\n" + jsText + "\n</script>";
+                }
 
                 var cssText = getStylesFromIframe( el.querySelector("iframe") );
 
