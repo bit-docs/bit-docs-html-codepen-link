@@ -63,14 +63,14 @@ describe("bit-docs-html-codepen-link", function() {
 						html: '<my-app></my-app>\n\n<script type="module">\nimport { Component } from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nComponent\n</script>',
 						js: '',
 						js_module: true,
-						editors: '1011',
+						editors: '1001',
 						css: 'my-app {color: "green";}'
 					},
 					{
 						html: '<script type="module">\nimport {DefineMap} from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nconsole.log( myCounter.count ) //-> 1\n</script>',
 						js: '',
 						js_module: true,
-						editors: '0011'
+						editors: '1001'
 					}
 				]);
 

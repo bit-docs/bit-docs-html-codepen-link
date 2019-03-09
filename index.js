@@ -17,21 +17,15 @@ function cleanCodePenData(data) {
 
 function createCodePen(data) {
 
-    var JSONstring =
-      JSON.stringify(data)
-        // Quotes will screw up the JSON
-        .replace(/"/g, "&​quot;") // careful copy and pasting, I had to use a zero-width space here to get markdown to post this.
-        .replace(/'/g, "&apos;");
-
+    var JSONstring = JSON.stringify(data);
 
     var form =  '<form action="https://codepen.io/pen/define" method="POST" target="_blank">' +
-        '<input type="hidden" name="data" value=\'' +
-        JSONstring +
-        '\'>' +
+        '<input type="hidden" name="data">' +
     '</form>';
 
     var div = document.createElement("div");
     div.innerHTML = form;
+    div.firstChild.firstChild.value = JSONstring;
     document.body.appendChild(div);
     div.firstChild.submit();
     setTimeout(function(){
@@ -123,6 +117,7 @@ module.exports = function() {
                     var jsAsModule = "<script type=\"module\">\n" + data.js + "\n</script>";
                     data.html = data.html ? data.html + "\n\n" + jsAsModule : jsAsModule;
                     data.js = "";
+                    data.editors = "1001";// HTML, Result, & Console
                 }
                 if(data) {
                     cleanCodePenData(data);
