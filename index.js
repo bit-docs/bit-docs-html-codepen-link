@@ -1,6 +1,17 @@
 var types = require("./codepen-data");
 var languageHTML = /language-(\w+)/;
 
+
+function cleanCodePenData(data) {
+    if(docObject.codepen) {
+        docObject.codepen.forEach(function(replacement){
+            if(data.js) {
+                data.js = data.js.split(replacement[0]).join(replacement[1]);
+            }
+        });
+    }
+}
+
 function createCodePen(data) {
 
     var JSONstring =
@@ -98,13 +109,7 @@ module.exports = function() {
                 var text = codeElement.textContent;
 
                 var data = types[language](text);
-                if(docObject.codepen) {
-                    docObject.codepen.forEach(function(replacement){
-                        if(data.js) {
-                            data.js = data.js.split(replacement[0]).join(replacement[1]);
-                        }
-                    });
-                }
+
                 if(data.js) {
                     data.js = data.js.trim();
                 }
@@ -112,6 +117,7 @@ module.exports = function() {
                     data.html = data.html.trim();
                 }
                 if(data) {
+                    cleanCodePenData(data);
                     if(window.CREATE_CODE_PEN) {
                         CREATE_CODE_PEN(data);
                     } else {
@@ -138,7 +144,7 @@ module.exports = function() {
                     editors: "1011",
                     css: cssText.trim()
                 };
-
+                cleanCodePenData(codePen);
                 if(window.CREATE_CODE_PEN) {
                     CREATE_CODE_PEN(codePen);
                 } else {
