@@ -22,7 +22,7 @@ var open = function(url, callback, done) {
 };
 
 describe("bit-docs-html-codepen-link", function() {
-	it("basics works", function(done) {
+	it.only("basics works", function(done) {
 		this.timeout(60000);
 
 		var docMap = Promise.resolve({
@@ -60,8 +60,8 @@ describe("bit-docs-html-codepen-link", function() {
                     codePen.click();
                 });
                 assert.deepEqual(createCallData,[
-                    {   html: '<my-app></my-app>\n\n<script type="module">\nimport { Component } from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nComponent\n</script>',
-                        js: '',
+                    {   html: '<my-app></my-app>',
+                        js: 'import { Component } from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nComponent',
                         js_module: true,
                         editors: '1011',
 						css: 'my-app {color: "green";}'
