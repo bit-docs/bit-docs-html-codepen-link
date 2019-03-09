@@ -115,7 +115,7 @@ describe("bit-docs-html-codepen-link", function() {
 		assert.equal(data.js_pre_processor, 'babel');
 	});
 
-	it("is able to create external js", function(){
+	it.skip("is able to create external js", function(){
 		var data = codepenData.html(`
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.2.1/rxjs.umd.js" codepen-external></script>
 			<script src="https://foo.com" codepen-external></script>
