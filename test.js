@@ -67,7 +67,8 @@ describe("bit-docs-html-codepen-link", function() {
 						css: 'my-app {color: "green";}'
 					},
 					{
-						js: 'import {DefineMap} from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nconsole.log( myCounter.count ) //-> 1',
+						html: '<script type="module">\nimport {DefineMap} from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nconsole.log( myCounter.count ) //-> 1\n</script>',
+						js: '',
 						js_module: true,
 						editors: '0011'
 					}

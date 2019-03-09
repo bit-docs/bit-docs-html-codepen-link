@@ -118,10 +118,11 @@ module.exports = function() {
                 }
                 if(data.html) {
                     data.html = data.html.trim();
-                    if (data.js) {
-                      data.html += "\n\n<script type=\"module\">\n" + data.js + "\n</script>";
-                      data.js = "";
-                    }
+                }
+                if (data.js && data.js.indexOf('import') > -1) {
+                    var jsAsModule = "<script type=\"module\">\n" + data.js + "\n</script>";
+                    data.html = data.html ? data.html + "\n\n" + jsAsModule : jsAsModule;
+                    data.js = "";
                 }
                 if(data) {
                     cleanCodePenData(data);
