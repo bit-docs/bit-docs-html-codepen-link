@@ -11,6 +11,9 @@ var assign = Object.assign || function(d, s) {
 function cleanCodePenData(data) {
     if(docObject.codepen) {
         docObject.codepen.forEach(function(replacement){
+            if(data.html) {
+                data.html = data.html.split(replacement[0]).join(replacement[1]);
+            }
             if(data.js) {
                 data.js = data.js.split(replacement[0]).join(replacement[1]);
             }
@@ -19,20 +22,8 @@ function cleanCodePenData(data) {
 }
 
 function createCodePen(data) {
-    if(data.html) {
-        // HTML needs to be escaped because put this in the page
-        data = assign({}, data);
-        data.html = data.html.replace(/&/g,"&amp;")
-                .replace(/</g,"&lt;")
-                .replace(/>/g,"&gt;");
-    }
 
-    var JSONstring =
-      JSON.stringify(data)
-        // Quotes will screw up the JSON
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&apos;");
-
+    var JSONstring = JSON.stringify(data);
 
     var form =  '<form action="https://codepen.io/pen/define" method="POST" target="_blank">' +
         '<input type="hidden" name="data">' +
@@ -128,6 +119,12 @@ module.exports = function() {
                 if(data.html) {
                     data.html = data.html.trim();
                 }
+                if (data.js && data.js.indexOf('import') > -1) {
+                    var jsAsModule = "<script type=\"module\">\n" + data.js + "\n</script>";
+                    data.html = data.html ? data.html + "\n\n" + jsAsModule : jsAsModule;
+                    data.js = "";
+                    data.editors = "1001";// HTML, Result, & Console
+                }
                 if(data) {
                     cleanCodePenData(data);
                     if(window.CREATE_CODE_PEN) {
@@ -146,6 +143,10 @@ module.exports = function() {
 
                 var jsCode = el.querySelector("[data-for=js] code");
                 var jsText = jsCode ? jsCode.textContent.trim() : "";
+                if (jsText) {
+                    htmlText += "\n<script type=\"module\">\n" + jsText + "\n</script>";
+                    jsText = "";
+                }
 
                 var cssText = getStylesFromIframe( el.querySelector("iframe") );
 

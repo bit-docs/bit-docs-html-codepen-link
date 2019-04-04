@@ -60,16 +60,17 @@ describe("bit-docs-html-codepen-link", function() {
 					codePen.click();
 				});
 				assert.deepEqual(createCallData, [{
-						html: '<my-app></my-app>',
-						js: 'import { Component } from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nComponent',
+						html: '<my-app></my-app>\n\n<script type="module">\nimport { Component } from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nComponent\n</script>',
+						js: '',
 						js_module: true,
-						editors: '1011',
+						editors: '1001',
 						css: 'my-app {color: "green";}'
 					},
 					{
-						js: 'import {DefineMap} from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nconsole.log( myCounter.count ) //-> 1',
+						html: '<script type="module">\nimport {DefineMap} from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nconsole.log( myCounter.count ) //-> 1\n</script>',
+						js: '',
 						js_module: true,
-						editors: '0011'
+						editors: '1001'
 					}
 				]);
 
@@ -113,5 +114,19 @@ describe("bit-docs-html-codepen-link", function() {
 		`);
 		assert.equal(data.js.trim(), 'const element = <h1>Hello, world!</h1>;');
 		assert.equal(data.js_pre_processor, 'babel');
+	});
+
+	it.skip("is able to create external js", function(){
+		var data = codepenData.html(`
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.2.1/rxjs.umd.js" codepen-external></script>
+			<script src="https://foo.com" codepen-external></script>
+			<script type="typescript">
+			const {Observable} = rxjs;
+			</script>
+		`);
+		assert.equal(data.js.trim(), 'const {Observable} = rxjs;');
+		assert.equal(data.js_pre_processor, 'typescript');
+		assert.equal(data.js_external,'https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.2.1/rxjs.umd.js;https://foo.com');
+		assert.equal(data.html, undefined, "no html")
 	});
 });

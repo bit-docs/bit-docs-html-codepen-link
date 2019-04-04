@@ -6,14 +6,20 @@ var types = {
 	html: function htmlType(text) {
 
 		var result;
+		var HTML =  text;
 
 		text.replace(scriptRegExp, function(match, attrs, code) {
 
 			var matchTest = attrs.match(moduleTest);
 
-			if (matchTest && !srcTest.test(attrs)) {
+			// This has a src="".  We look for codepen-external
+			if(srcTest.test(attrs)) {
 
-				var HTML = text.replace(match, "").trim();
+			}
+			// It doesn't have a src, so we assume this has a body
+			else if (matchTest) {
+
+				HTML = HTML.replace(match, "").trim();
 				var CSS;
 				var styleResults = HTML.match(styleRegExp);
 				if (styleResults) {
