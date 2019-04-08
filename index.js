@@ -119,12 +119,6 @@ module.exports = function() {
                 if(data.html) {
                     data.html = data.html.trim();
                 }
-                if (data.js && data.js.indexOf('import') > -1) {
-                    var jsAsModule = "<script type=\"module\">\n" + data.js + "\n</script>";
-                    data.html = data.html ? data.html + "\n\n" + jsAsModule : jsAsModule;
-                    data.js = "";
-                    data.editors = "1001";// HTML, Result, & Console
-                }
                 if(data) {
                     cleanCodePenData(data);
                     if(window.CREATE_CODE_PEN) {
@@ -143,10 +137,6 @@ module.exports = function() {
 
                 var jsCode = el.querySelector("[data-for=js] code");
                 var jsText = jsCode ? jsCode.textContent.trim() : "";
-                if (jsText) {
-                    htmlText += "\n<script type=\"module\">\n" + jsText + "\n</script>";
-                    jsText = "";
-                }
 
                 var cssText = getStylesFromIframe( el.querySelector("iframe") );
 
