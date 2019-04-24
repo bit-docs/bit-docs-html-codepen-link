@@ -2,6 +2,8 @@ var scriptRegExp = /<script\s([^>]+)>([\s\S]*?)<\/script>/ig;
 var styleRegExp = /<style>([\s\S]*?)<\/style>/i;
 var moduleTest = /type=["']([\w\/]+)["']/;
 var srcTest = /src=/;
+var DEFAULT_EDITORS = "0011";
+
 var types = {
 	html: function htmlType(text) {
 
@@ -40,27 +42,36 @@ var types = {
 				}
 			}
 		});
+
+		// If there are no scripts the should at least be HTML
+		if(!result) {
+			result = {
+				html: HTML,
+				editors: DEFAULT_EDITORS
+			}
+		}
+
 		return result;
 	},
 	js: function(text) {
 		return {
 			js: text,
 			js_module: true,
-			editors: "0011"
+			editors: DEFAULT_EDITORS
 		};
 	},
 	typescript: function(text) {
 		return {
 			js: text,
 			js_pre_processor: "typescript",
-			editors: "0011"
+			editors: DEFAULT_EDITORS
 		};
 	},
 	jsx: function(text) {
 		return {
 			js: text,
 			js_pre_processor: "babel",
-			editors: "0011"
+			editors: DEFAULT_EDITORS
 		};
 	}
 };
