@@ -128,4 +128,13 @@ describe("bit-docs-html-codepen-link", function() {
 		assert.equal(data.js_external,'https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.2.1/rxjs.umd.js;https://foo.com');
 		assert.equal(data.html, undefined, "no html")
 	});
+
+	it("works when there is no js", function() {
+		var data = codepenData.html(`
+<div>Hello world</div>
+		`)
+
+		assert(data, "got data");
+		assert.equal(data.html.trim(), "<div>Hello world</div>");
+	})
 });
