@@ -1,18 +1,19 @@
 var scriptRegExp = /<script\s([^>]+)>([\s\S]*?)<\/script>/ig;
 var styleRegExp = /<style>([\s\S]*?)<\/style>/i;
+var templateRegExp = /<template>([\s\S]*?)<\/template>/ig;
 var moduleTest = /type=["']([\w\/]+)["']/;
 var srcTest = /src=/;
 var DEFAULT_EDITORS = "0011";
 
 var types = {
 	html: function htmlType(text) {
-
 		var result;
-		var HTML =  text;
+		var HTML = text;
+		var textWithoutTemplates = text.replace(templateRegExp, "");
 
-		text.replace(scriptRegExp, function(match, attrs, code) {
-
+		textWithoutTemplates.replace(scriptRegExp, function(match, attrs, code) {
 			var matchTest = attrs.match(moduleTest);
+			var HTMLwithoutTemplates = HTML.replace(templateRegExp, "");
 
 			// This has a src="".  We look for codepen-external
 			if(srcTest.test(attrs)) {
@@ -20,10 +21,9 @@ var types = {
 			}
 			// It doesn't have a src, so we assume this has a body
 			else if (matchTest) {
-
 				HTML = HTML.replace(match, "").trim();
 				var CSS;
-				var styleResults = HTML.match(styleRegExp);
+				var styleResults = HTMLwithoutTemplates.match(styleRegExp);
 				if (styleResults) {
 					HTML = HTML.replace(styleResults[0], "").trim();
 					CSS = styleResults[1].trim();

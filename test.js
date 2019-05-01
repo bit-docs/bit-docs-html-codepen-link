@@ -136,5 +136,53 @@ describe("bit-docs-html-codepen-link", function() {
 
 		assert(data, "got data");
 		assert.equal(data.html.trim(), "<div>Hello world</div>");
-	})
+	});
+
+	it("Does not remove styles from within a template", function() {
+		var data = codepenData.html(`
+<template>
+	<style>.root { display: block; }</style>
+</template>
+<script type="module"></script>
+		`);
+
+		assert(!data.css, "There should not be css");
+		assert.equal(data.html.trim(), `
+<template>
+	<style>.root { display: block; }</style>
+</template>
+		`.trim());
+	});
+
+	it("Does not remove scripts from within a template", function() {
+		var data = codepenData.html(`
+<template>
+	<script>console.log('testing');</script>
+</template>
+<script type="module"></script>
+		`);
+
+		assert(!data.js, "There should not be js");
+		assert.equal(data.html.trim(), `
+<template>
+	<script>console.log('testing');</script>
+</template>
+		`.trim());
+	});
+
+	it("Does not remove module scripts from within a template", function() {
+		var data = codepenData.html(`
+<template>
+	<script type="module">console.log('testing');</script>
+</template>
+<script type="module"></script>
+		`);
+
+		assert(!data.js, "There should not be js");
+		assert.equal(data.html.trim(), `
+<template>
+	<script type="module">console.log('testing');</script>
+</template>
+		`.trim());
+	});
 });
