@@ -185,4 +185,22 @@ describe("bit-docs-html-codepen-link", function() {
 </template>
 		`.trim());
 	});
+
+	it("Does not remove styles2", function() {
+		var data = codepenData.html(`
+		<template id="tmpl">
+			<style>
+			</style>
+			<div class="gmap"></div>
+		</template>
+		<script type="module"></script>`);
+
+		var html = data.html.trim();
+		assert.ok(/style/.test(html));
+		assert.equal(html, `<template id="tmpl">
+			<style>
+			</style>
+			<div class="gmap"></div>
+		</template>`)
+	});
 });

@@ -1,6 +1,6 @@
 var scriptRegExp = /<script\s([^>]+)>([\s\S]*?)<\/script>/ig;
 var styleRegExp = /<style>([\s\S]*?)<\/style>/i;
-var templateRegExp = /<template>([\s\S]*?)<\/template>/ig;
+var templateRegExp = /<template\s?([^>]+)?>([\s\S]*?)<\/template>/ig;
 var moduleTest = /type=["']([\w\/]+)["']/;
 var srcTest = /src=/;
 var DEFAULT_EDITORS = "0011";
