@@ -1,5 +1,6 @@
 var scriptRegExp = /<script\s([^>]+)>([\s\S]*?)<\/script>/ig;
 var styleRegExp = /<style>([\s\S]*?)<\/style>/i;
+var lessRegExp = /<style type="text\/less">([\s\S]*?)<\/style>/i;
 var templateRegExp = /<template\s?([^>]+)?>([\s\S]*?)<\/template>/ig;
 var moduleTest = /type=["']([\w\/]+)["']/;
 var srcTest = /src=/;
@@ -22,11 +23,17 @@ var types = {
 			// It doesn't have a src, so we assume this has a body
 			else if (matchTest) {
 				HTML = HTML.replace(match, "").trim();
-				var CSS;
+				var CSS, PRECSS;
 				var styleResults = HTMLwithoutTemplates.match(styleRegExp);
 				if (styleResults) {
 					HTML = HTML.replace(styleResults[0], "").trim();
 					CSS = styleResults[1].trim();
+				}
+				var lessResults = HTMLwithoutTemplates.match(lessRegExp);
+				if (lessResults) {
+					HTML = HTML.replace(lessResults[0], "").trim();
+					CSS = lessResults[1].trim();
+					PRECSS = 'less';
 				}
 				if (types[matchTest[1]]) {
 					result = types[matchTest[1]](code.trim());
@@ -39,6 +46,10 @@ var types = {
 				}
 				if (CSS) {
 					result.css = CSS;
+
+					if (PRECSS) {
+						result.css_pre_processor = PRECSS;
+					}
 				}
 			}
 		});

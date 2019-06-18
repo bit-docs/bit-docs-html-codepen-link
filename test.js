@@ -115,6 +115,22 @@ describe("bit-docs-html-codepen-link", function() {
 		assert.equal(data.js_pre_processor, 'babel');
 	});
 
+	it("is able to parse less in html", function() {
+		var data = codepenData.html(`
+			<style type="text/less">
+				@custom-color: #454545;
+			</style>
+			<span>Hello.</span>
+			<script type="module">
+				function greeter(person) { return "Hello, " + person; }
+			</script>
+		`);
+		console.log(JSON.stringify(data));
+		assert.equal(data.css.trim(), '@custom-color: #454545;');
+		assert.equal(data.css_pre_processor, 'less');
+	});
+
+
 	it.skip("is able to create external js", function(){
 		var data = codepenData.html(`
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.2.1/rxjs.umd.js" codepen-external></script>
