@@ -6,6 +6,14 @@ var moduleTest = /type=["']([\w\/]+)["']/;
 var srcTest = /src=/;
 var DEFAULT_EDITORS = "0011";
 
+function typescript(text) {
+	return {
+		js: text,
+		js_pre_processor: "typescript",
+		editors: DEFAULT_EDITORS
+	};
+}
+
 var types = {
 	html: function htmlType(text) {
 		var result;
@@ -71,13 +79,8 @@ var types = {
 			editors: DEFAULT_EDITORS
 		};
 	},
-	typescript: function(text) {
-		return {
-			js: text,
-			js_pre_processor: "typescript",
-			editors: DEFAULT_EDITORS
-		};
-	},
+	typescript: typescript,
+	ts: typescript,
 	jsx: function(text) {
 		return {
 			js: text,

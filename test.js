@@ -219,4 +219,8 @@ describe("bit-docs-html-codepen-link", function() {
 			<div class="gmap"></div>
 		</template>`)
 	});
+
+	it("supports ts files", function() {
+		assert.ok(codepenData.ts, "there is a ts");
+	});
 });
