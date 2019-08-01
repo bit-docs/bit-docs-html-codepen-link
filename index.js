@@ -121,7 +121,7 @@ module.exports = function() {
                     break;
                 }
             };
-            //var el = findSelector(env.element.parentElement, 'pre, .demo_wrapper');
+
             if (el && matches.call(el, 'pre')) {
                 var language = env.language;
                 var text = env.code;
