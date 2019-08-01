@@ -56,7 +56,7 @@ describe("bit-docs-html-codepen-link", function() {
 					createCallData.push(data);
 				};
 				var toolbars = doc.querySelectorAll('.toolbar');
-				Array.from(toolbars).forEach(function(toolbar) {
+				toolbars.forEach(function(toolbar) {
 					var btn = toolbar.children[toolbar.children.length - 1].querySelector('button');
 					btn.click();
 				});

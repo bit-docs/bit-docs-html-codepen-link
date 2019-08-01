@@ -73,20 +73,13 @@ function findPre(start) {
     }
 }
 
-function findSelector(start, selector) {
-    while(start) {
-        if(matches.call(start, selector)) {
-            return start;
+function findDemoWrapper(el) {
+    while(el && el.parentNode) {
+        if(matches.call(el.parentNode, '.demo_wrapper')) {
+            var demoWrapper = el.parentNode;
+            return demoWrapper;
         }
-        if(start.querySelector) {
-            var pre = start.querySelector(selector);
-            if(pre) {
-                return pre;
-            }
-        }
-
-        // needs to be previousSibling for zombie
-        start = start.previousSibling;
+        el = el.parentNode;
     }
 }
 
@@ -101,11 +94,8 @@ function getStylesFromIframe(iframe) {
 
 module.exports = function() {
     var codepens = document.querySelectorAll(".codepen");
-    var parents = [];
     //remove the old codepen links
     codepens.forEach(function(codepen, i){
-        var el = findSelector(codepen, 'pre, .demo_wrapper');
-        parents.push(el);
         codepen.parentNode.removeChild(codepen);
     });
 
@@ -114,15 +104,9 @@ module.exports = function() {
         var btn = document.createElement("button");
         btn.innerHTML = "Run";
         btn.addEventListener('click', function() {
-            var el;
-            for (var i = 0; i < parents.length; i++) {
-                if (parents[i].contains(env.element)) {
-                    el = parents[i];
-                    break;
-                }
-            };
+            var demoWrapper = findDemoWrapper(env.element);
 
-            if (el && matches.call(el, 'pre')) {
+            if (!demoWrapper && matches.call(env.element.parentNode, 'pre')) {
                 var language = env.language;
                 var text = env.code;
                 var data = types[language](text);
@@ -143,12 +127,12 @@ module.exports = function() {
                     console.warn('Unable to create a codepen for this demo');
                 }
             }
-            if (el && matches.call(el, '.demo_wrapper')) {
-                var htmlCode = el.querySelector('[data-for=html] code');
+            if (demoWrapper && matches.call(demoWrapper, '.demo_wrapper')) {
+                var htmlCode = demoWrapper.querySelector('[data-for=html] code');
                 var htmlText = htmlCode ? htmlCode.textContent.trim() : '';
-                var jsCode = el.querySelector('[data-for=js] code');
+                var jsCode = demoWrapper.querySelector('[data-for=js] code');
                 var jsText = jsCode ? jsCode.textContent.trim() : '';
-                var cssText = getStylesFromIframe(el.querySelector('iframe'));
+                var cssText = getStylesFromIframe(demoWrapper.querySelector('iframe'));
                 var codePen = {
                     html: htmlText,
                     js: jsText,
