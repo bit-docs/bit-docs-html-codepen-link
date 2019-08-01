@@ -100,62 +100,70 @@ function getStylesFromIframe(iframe) {
 }
 
 module.exports = function() {
+    var codepens = document.querySelectorAll(".codepen");
+    var parents = [];
+    //remove the old codepen links
+    codepens.forEach(function(codepen, i){
+        var el = findSelector(codepen, 'pre, .demo_wrapper');
+        parents.push(el);
+        codepen.parentNode.removeChild(codepen);
+    });
 
-    document.body.addEventListener("click", function(ev){
-        if(matches.call(ev.target, ".codepen")){
-
-            var el = findSelector(ev.target, "pre, .demo_wrapper");
-            if(el && matches.call(el, "pre")) {
-                var preElement = el;
-                var codeElement = preElement.querySelector("code");
-                var language = codeElement.className.match(languageHTML)[1];
-                var text = codeElement.textContent;
-
+    //Register PrismJS "Run" custom button
+    Prism.plugins.toolbar.registerButton("run-code", function(env) {
+        var btn = document.createElement("button");
+        btn.innerHTML = "Run";
+        btn.addEventListener('click', function() {
+            var el;
+            for (var i = 0; i < parents.length; i++) {
+                if (parents[i].contains(env.element)) {
+                    el = parents[i];
+                    break;
+                }
+            };
+            //var el = findSelector(env.element.parentElement, 'pre, .demo_wrapper');
+            if (el && matches.call(el, 'pre')) {
+                var language = env.language;
+                var text = env.code;
                 var data = types[language](text);
-
-                if(data.js) {
+                if (data.js) {
                     data.js = data.js.trim();
                 }
-                if(data.html) {
+                if (data.html) {
                     data.html = data.html.trim();
                 }
-                if(data) {
+                if (data) {
                     cleanCodePenData(data);
-                    if(window.CREATE_CODE_PEN) {
+                    if (window.CREATE_CODE_PEN) {
                         CREATE_CODE_PEN(data);
                     } else {
                         createCodePen(data);
                     }
-
                 } else {
-                    console.warn("Unable to create a codepen for this demo");
+                    console.warn('Unable to create a codepen for this demo');
                 }
             }
-            if(el && matches.call(el, ".demo_wrapper")) {
-                var htmlCode = el.querySelector("[data-for=html] code");
-                var htmlText = htmlCode ? htmlCode.textContent.trim() : "";
-
-                var jsCode = el.querySelector("[data-for=js] code");
-                var jsText = jsCode ? jsCode.textContent.trim() : "";
-
-                var cssText = getStylesFromIframe( el.querySelector("iframe") );
-
+            if (el && matches.call(el, '.demo_wrapper')) {
+                var htmlCode = el.querySelector('[data-for=html] code');
+                var htmlText = htmlCode ? htmlCode.textContent.trim() : '';
+                var jsCode = el.querySelector('[data-for=js] code');
+                var jsText = jsCode ? jsCode.textContent.trim() : '';
+                var cssText = getStylesFromIframe(el.querySelector('iframe'));
                 var codePen = {
                     html: htmlText,
                     js: jsText,
                     js_module: true,
-                    editors: "1011",
+                    editors: '1011',
                     css: cssText.trim()
                 };
                 cleanCodePenData(codePen);
-                if(window.CREATE_CODE_PEN) {
+                if (window.CREATE_CODE_PEN) {
                     CREATE_CODE_PEN(codePen);
                 } else {
                     createCodePen(codePen);
                 }
-
             }
-
-        }
+        });
+        return btn;
     });
 };
