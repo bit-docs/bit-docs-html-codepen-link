@@ -114,8 +114,11 @@ module.exports = function() {
     //remove the old codepen links
     codepens.forEach(function(codepen, i){
         var wrapper = findSelector(codepen, "pre, .demo_wrapper");
-        wrapper.setAttribute("data-has-run", true);
-        codepen.parentNode.removeChild(codepen);
+        //the CodePen iframe wrapper has ".codepen" class too
+        if (wrapper) {
+            wrapper.setAttribute('data-has-run', true);
+            codepen.parentNode.removeChild(codepen);
+        }
     });
 
     //Register PrismJS "Run" custom button
