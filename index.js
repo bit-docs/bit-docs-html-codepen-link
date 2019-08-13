@@ -110,7 +110,7 @@ function getStylesFromIframe(iframe) {
 }
 
 module.exports = function() {
-    var codepens = document.querySelectorAll(".codepen");
+    var codepens = document.querySelectorAll('div.codepen');
     //remove the old codepen links
     codepens.forEach(function(codepen, i){
         var wrapper = findSelector(codepen, "pre, .demo_wrapper");
