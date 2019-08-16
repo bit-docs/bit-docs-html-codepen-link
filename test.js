@@ -271,7 +271,7 @@ describe("bit-docs-html-codepen-link", function() {
 				toolbars.forEach(function(toolbar) {
 					var children = toolbar.children;
 					assert.equal(toolbar.children.length, 2);
-					assert.equal(children[children.length - 1].innerHTML, '<div class="toolbar-item"><button>Copy</button></div><div class="toolbar-item"><button>Run</button></div>');
+					assert.equal(children[children.length - 1].innerHTML, '<div class="toolbar-item"><button>Copy</button></div><div class="toolbar-item"><button data-run="">Run</button></div>');
 				});
 				close();
 				done();

@@ -93,10 +93,22 @@ function findSelector(start, selector) {
 function findDemoWrapper(el) {
     while(el && el.parentNode) {
         if(matches.call(el.parentNode, '.demo_wrapper')) {
-            var demoWrapper = el.parentNode;
-            return demoWrapper;
+            return el.parentNode;
         }
         el = el.parentNode;
+    }
+}
+
+function findPreForToolbarBtn(el) {
+    while(el) {
+        if (el.nodeName === "PRE") {
+            return el;
+        }
+        if (matches.call(el, '.toolbar')) {
+            el = findSelector(el, 'pre');
+        } else {
+            el = el.parentNode;
+        }
     }
 }
 
@@ -130,53 +142,60 @@ module.exports = function() {
         if (hasRunBtn) {
             var btn = document.createElement("button");
             btn.innerHTML = "Run";
-            document.body.addEventListener('click', function (ev) {
-                ev.stopPropagation();
-                if (ev.target === btn) {
-                    if (!demoWrapper && matches.call(env.element.parentNode, 'pre')) {
-                        var language = env.language;
-                        var text = env.code;
-                        var data = types[language](text);
-                        if (data.js) {
-                            data.js = data.js.trim();
-                        }
-                        if (data.html) {
-                            data.html = data.html.trim();
-                        }
-                        if (data) {
-                            cleanCodePenData(data);
-                            if (window.CREATE_CODE_PEN) {
-                                CREATE_CODE_PEN(data);
-                            } else {
-                                createCodePen(data);
-                            }
-                        } else {
-                            console.warn('Unable to create a codepen for this demo');
-                        }
-                    }
-                    if (demoWrapper && matches.call(demoWrapper, '.demo_wrapper')) {
-                        var htmlCode = demoWrapper.querySelector('[data-for=html] code');
-                        var htmlText = htmlCode ? htmlCode.textContent.trim() : '';
-                        var jsCode = demoWrapper.querySelector('[data-for=js] code');
-                        var jsText = jsCode ? jsCode.textContent.trim() : '';
-                        var cssText = getStylesFromIframe(demoWrapper.querySelector('iframe'));
-                        var codePen = {
-                            html: htmlText,
-                            js: jsText,
-                            js_module: true,
-                            editors: '1011',
-                            css: cssText.trim()
-                        };
-                        cleanCodePenData(codePen);
-                        if (window.CREATE_CODE_PEN) {
-                            CREATE_CODE_PEN(codePen);
-                        } else {
-                            createCodePen(codePen);
-                        }
-                    }
-                }
-            });
+            btn.setAttribute("data-run", "");
             return btn;
+        }
+    });
+    document.body.addEventListener('click', function (ev) {
+        if (ev.target.getAttribute('data-run') != null) {
+            var btn = ev.target;
+            var demoWrapper = findDemoWrapper(btn);
+            if (!demoWrapper) {
+                var preElement = findPreForToolbarBtn(btn);
+                var codeElement = preElement.querySelector("code");
+                var language = codeElement.className.match(languageHTML)[1];
+                var text = codeElement.textContent;
+
+                var data = types[language](text);
+
+                if(data.js) {
+                    data.js = data.js.trim();
+                }
+                if(data.html) {
+                    data.html = data.html.trim();
+                }
+                if(data) {
+                    cleanCodePenData(data);
+                    if(window.CREATE_CODE_PEN) {
+                        CREATE_CODE_PEN(data);
+                    } else {
+                        createCodePen(data);
+                    }
+
+                } else {
+                    console.warn("Unable to create a codepen for this demo");
+                }
+            }
+            if (demoWrapper && matches.call(demoWrapper, '.demo_wrapper')) {
+                var htmlCode = demoWrapper.querySelector('[data-for=html] code');
+                var htmlText = htmlCode ? htmlCode.textContent.trim() : '';
+                var jsCode = demoWrapper.querySelector('[data-for=js] code');
+                var jsText = jsCode ? jsCode.textContent.trim() : '';
+                var cssText = getStylesFromIframe(demoWrapper.querySelector('iframe'));
+                var codePen = {
+                    html: htmlText,
+                    js: jsText,
+                    js_module: true,
+                    editors: '1011',
+                    css: cssText.trim()
+                };
+                cleanCodePenData(codePen);
+                if (window.CREATE_CODE_PEN) {
+                    CREATE_CODE_PEN(codePen);
+                } else {
+                    createCodePen(codePen);
+                }
+            }
         }
     });
 };
