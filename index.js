@@ -90,6 +90,28 @@ function findSelector(start, selector) {
     }
 }
 
+function findDemoWrapper(el) {
+    while(el && el.parentNode) {
+        if(matches.call(el.parentNode, '.demo_wrapper')) {
+            return el.parentNode;
+        }
+        el = el.parentNode;
+    }
+}
+
+function findPreForToolbarBtn(el) {
+    while(el) {
+        if (el.nodeName === "PRE") {
+            return el;
+        }
+        if (matches.call(el, '.toolbar')) {
+            el = findSelector(el, 'pre');
+        } else {
+            el = el.parentNode;
+        }
+    }
+}
+
 function getStylesFromIframe(iframe) {
     var styles = iframe.contentDocument.documentElement.querySelectorAll("style");
     var cssText = "";
@@ -100,13 +122,36 @@ function getStylesFromIframe(iframe) {
 }
 
 module.exports = function() {
+    var codepens = document.querySelectorAll('div.codepen');
+    //remove the old codepen links
+    codepens.forEach(function(codepen, i){
+        var wrapper = findSelector(codepen, "pre, .demo_wrapper");
+        //the CodePen iframe wrapper has ".codepen" class too
+        if (wrapper) {
+            wrapper.setAttribute('data-has-run', true);
+            codepen.parentNode.removeChild(codepen);
+        }
+    });
 
-    document.body.addEventListener("click", function(ev){
-        if(matches.call(ev.target, ".codepen")){
-
-            var el = findSelector(ev.target, "pre, .demo_wrapper");
-            if(el && matches.call(el, "pre")) {
-                var preElement = el;
+    //Register PrismJS "Run" custom button
+    Prism.plugins.toolbar.registerButton("run-code", function(env) {
+        var demoWrapper = findDemoWrapper(env.element);
+        var pre = env.element.parentElement;
+        var hasRunBtn = demoWrapper ? demoWrapper.getAttribute("data-has-run") : pre.getAttribute("data-has-run");
+        //prevent other demos without codepen link to register Run button
+        if (hasRunBtn) {
+            var btn = document.createElement("button");
+            btn.innerHTML = "Run";
+            btn.setAttribute("data-run", "");
+            return btn;
+        }
+    });
+    document.body.addEventListener('click', function (ev) {
+        if (ev.target.getAttribute('data-run') != null) {
+            var btn = ev.target;
+            var demoWrapper = findDemoWrapper(btn);
+            if (!demoWrapper) {
+                var preElement = findPreForToolbarBtn(btn);
                 var codeElement = preElement.querySelector("code");
                 var language = codeElement.className.match(languageHTML)[1];
                 var text = codeElement.textContent;
@@ -131,31 +176,26 @@ module.exports = function() {
                     console.warn("Unable to create a codepen for this demo");
                 }
             }
-            if(el && matches.call(el, ".demo_wrapper")) {
-                var htmlCode = el.querySelector("[data-for=html] code");
-                var htmlText = htmlCode ? htmlCode.textContent.trim() : "";
-
-                var jsCode = el.querySelector("[data-for=js] code");
-                var jsText = jsCode ? jsCode.textContent.trim() : "";
-
-                var cssText = getStylesFromIframe( el.querySelector("iframe") );
-
+            if (demoWrapper && matches.call(demoWrapper, '.demo_wrapper')) {
+                var htmlCode = demoWrapper.querySelector('[data-for=html] code');
+                var htmlText = htmlCode ? htmlCode.textContent.trim() : '';
+                var jsCode = demoWrapper.querySelector('[data-for=js] code');
+                var jsText = jsCode ? jsCode.textContent.trim() : '';
+                var cssText = getStylesFromIframe(demoWrapper.querySelector('iframe'));
                 var codePen = {
                     html: htmlText,
                     js: jsText,
                     js_module: true,
-                    editors: "1011",
+                    editors: '1011',
                     css: cssText.trim()
                 };
                 cleanCodePenData(codePen);
-                if(window.CREATE_CODE_PEN) {
+                if (window.CREATE_CODE_PEN) {
                     CREATE_CODE_PEN(codePen);
                 } else {
                     createCodePen(codePen);
                 }
-
             }
-
         }
     });
 };

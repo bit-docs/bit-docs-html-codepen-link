@@ -40,6 +40,7 @@ describe("bit-docs-html-codepen-link", function() {
 			html: {
 				dependencies: {
 					"bit-docs-html-codepen-link": __dirname,
+					"bit-docs-prettify": "^0.4.0",
 					"bit-docs-tag-demo": "^0.5.3"
 				}
 			},
@@ -54,10 +55,10 @@ describe("bit-docs-html-codepen-link", function() {
 				browser.window.CREATE_CODE_PEN = function(data) {
 					createCallData.push(data);
 				};
-				var codePens = doc.querySelectorAll('.codepen');
-
-				Array.from(codePens).forEach(function(codePen) {
-					codePen.click();
+				var toolbars = doc.querySelectorAll('.toolbar');
+				toolbars.forEach(function(toolbar) {
+					var btn = toolbar.children[toolbar.children.length - 1].querySelector('button');
+					btn.click();
 				});
 				assert.deepEqual(createCallData, [{
 						html: '<my-app></my-app>',
@@ -70,8 +71,21 @@ describe("bit-docs-html-codepen-link", function() {
 						js: 'import {DefineMap} from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nconsole.log( myCounter.count ) //-> 1',
 						js_module: true,
 						editors: '0011'
-					}
-				]);
+					},
+					{
+						css: 'h1 {color: red;}',
+						editors: '1011',
+						html: '<h1>Hi There!</h1>',
+						js: 'var code = "code";',
+						js_module: true
+					},
+					{
+						css: 'h1 {color: red;}',
+						editors: '1011',
+						html: '<h1>Hi There!</h1>',
+						js: 'var code = "code";',
+						js_module: true
+					}]);
 
 				close();
 				done();
@@ -222,5 +236,46 @@ describe("bit-docs-html-codepen-link", function() {
 
 	it("supports ts files", function() {
 		assert.ok(codepenData.ts, "there is a ts");
+	});
+
+	it("Registers run code button", function(done) {
+		this.timeout(60000);
+
+		var docMap = Promise.resolve({
+			index: {
+				name: "index",
+				demo: "path/to/demo.html",
+				body: fs.readFileSync(__dirname + "/test-demo.md", "utf8"),
+				codepen: [
+					["can", "//unpkg.com/can@^5.0.0-pre.1/core.mjs"]
+				]
+			}
+		});
+
+		generate(docMap, {
+			html: {
+				dependencies: {
+					"bit-docs-html-codepen-link": __dirname,
+					"bit-docs-prettify": "^0.4.0",
+					"bit-docs-tag-demo": "^0.5.3"
+				}
+			},
+			dest: path.join(__dirname, "temp"),
+			parent: "index",
+			forceBuild: true,
+			minifyBuild: false
+		}).then(function() {
+			open("temp/index.html", function(browser, close) {
+				var doc = browser.window.document;
+				var toolbars = doc.querySelectorAll(".code-toolbar");
+				toolbars.forEach(function(toolbar) {
+					var children = toolbar.children;
+					assert.equal(toolbar.children.length, 2);
+					assert.equal(children[children.length - 1].innerHTML, '<div class="toolbar-item"><button>Copy</button></div><div class="toolbar-item"><button data-run="">Run</button></div>');
+				});
+				close();
+				done();
+			}, done);
+		}, done);
 	});
 });

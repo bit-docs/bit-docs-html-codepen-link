@@ -27,8 +27,9 @@
   "dependencies": {},
   "devDependencies": {
     "bit-docs-generate-html": "^0.1.0",
+    "bit-docs-prettify": "^0.4.1",
     "connect": "^2.14.4",
     "mocha": "^6.0.2",
-    "zombie": "^4.3.0"
+    "zombie": "^6.1.0"
   }
 }
