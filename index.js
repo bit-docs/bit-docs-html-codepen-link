@@ -121,6 +121,8 @@ function getStylesFromIframe(iframe) {
     return cssText;
 }
 
+var isRegistred = false;
+
 module.exports = function() {
     var codepens = document.querySelectorAll('div.codepen');
     //remove the old codepen links
@@ -133,69 +135,71 @@ module.exports = function() {
         }
     });
 
-    //Register PrismJS "Run" custom button
-    Prism.plugins.toolbar.registerButton("run-code", function(env) {
-        var demoWrapper = findDemoWrapper(env.element);
-        var pre = env.element.parentElement;
-        var hasRunBtn = demoWrapper ? demoWrapper.getAttribute("data-has-run") : pre.getAttribute("data-has-run");
-        //prevent other demos without codepen link to register Run button
-        if (hasRunBtn) {
-            var btn = document.createElement("button");
-            btn.innerHTML = "Run";
-            btn.setAttribute("data-run", "");
-            return btn;
-        }
-    });
-    document.body.addEventListener('click', function (ev) {
-        if (ev.target.getAttribute('data-run') != null) {
-            var btn = ev.target;
-            var demoWrapper = findDemoWrapper(btn);
-            if (!demoWrapper) {
-                var preElement = findPreForToolbarBtn(btn);
-                var codeElement = preElement.querySelector("code");
-                var language = codeElement.className.match(languageHTML)[1];
-                var text = codeElement.textContent;
+    if (!isRegistred) {
+        //Register PrismJS "Run" custom button
+        Prism.plugins.toolbar.registerButton("run-code", function(env) {
+            var demoWrapper = findDemoWrapper(env.element);
+            var pre = env.element.parentElement;
+            var hasRunBtn = demoWrapper ? demoWrapper.getAttribute("data-has-run") : pre.getAttribute("data-has-run");
+            //prevent other demos without codepen link to register Run button
+            if (hasRunBtn) {
+                var btn = document.createElement("button");
+                btn.innerHTML = "Run";
+                btn.setAttribute("data-run", "");
+                return btn;
+            }
+        });
+        document.body.addEventListener('click', function (ev) {
+            if (ev.target.getAttribute('data-run') != null) {
+                var btn = ev.target;
+                var demoWrapper = findDemoWrapper(btn);
+                if (!demoWrapper) {
+                    var preElement = findPreForToolbarBtn(btn);
+                    var codeElement = preElement.querySelector("code");
+                    var language = codeElement.className.match(languageHTML)[1];
+                    var text = codeElement.textContent;
 
-                var data = types[language](text);
+                    var data = types[language](text);
 
-                if(data.js) {
-                    data.js = data.js.trim();
-                }
-                if(data.html) {
-                    data.html = data.html.trim();
-                }
-                if(data) {
-                    cleanCodePenData(data);
-                    if(window.CREATE_CODE_PEN) {
-                        CREATE_CODE_PEN(data);
-                    } else {
-                        createCodePen(data);
+                    if(data.js) {
+                        data.js = data.js.trim();
                     }
+                    if(data.html) {
+                        data.html = data.html.trim();
+                    }
+                    if(data) {
+                        cleanCodePenData(data);
+                        if(window.CREATE_CODE_PEN) {
+                            CREATE_CODE_PEN(data);
+                        } else {
+                            createCodePen(data);
+                        }
 
-                } else {
-                    console.warn("Unable to create a codepen for this demo");
+                    } else {
+                        console.warn("Unable to create a codepen for this demo");
+                    }
+                }
+                if (demoWrapper && matches.call(demoWrapper, '.demo_wrapper')) {
+                    var htmlCode = demoWrapper.querySelector('[data-for=html] code');
+                    var htmlText = htmlCode ? htmlCode.textContent.trim() : '';
+                    var jsCode = demoWrapper.querySelector('[data-for=js] code');
+                    var jsText = jsCode ? jsCode.textContent.trim() : '';
+                    var cssText = getStylesFromIframe(demoWrapper.querySelector('iframe'));
+                    var codePen = {
+                        html: htmlText,
+                        js: jsText,
+                        js_module: true,
+                        editors: '1011',
+                        css: cssText.trim()
+                    };
+                    cleanCodePenData(codePen);
+                    if (window.CREATE_CODE_PEN) {
+                        CREATE_CODE_PEN(codePen);
+                    } else {
+                        createCodePen(codePen);
+                    }
                 }
             }
-            if (demoWrapper && matches.call(demoWrapper, '.demo_wrapper')) {
-                var htmlCode = demoWrapper.querySelector('[data-for=html] code');
-                var htmlText = htmlCode ? htmlCode.textContent.trim() : '';
-                var jsCode = demoWrapper.querySelector('[data-for=js] code');
-                var jsText = jsCode ? jsCode.textContent.trim() : '';
-                var cssText = getStylesFromIframe(demoWrapper.querySelector('iframe'));
-                var codePen = {
-                    html: htmlText,
-                    js: jsText,
-                    js_module: true,
-                    editors: '1011',
-                    css: cssText.trim()
-                };
-                cleanCodePenData(codePen);
-                if (window.CREATE_CODE_PEN) {
-                    CREATE_CODE_PEN(codePen);
-                } else {
-                    createCodePen(codePen);
-                }
-            }
-        }
-    });
+        });
+    }
 };
