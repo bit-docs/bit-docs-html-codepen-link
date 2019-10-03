@@ -146,6 +146,7 @@ module.exports = function() {
                 var btn = document.createElement("button");
                 btn.innerHTML = "Run";
                 btn.setAttribute("data-run", "");
+                isRegistred = true;
                 return btn;
             }
         });
