@@ -121,7 +121,7 @@ function getStylesFromIframe(iframe) {
     return cssText;
 }
 
-var isRegistred = false;
+var isRegistered = false;
 
 module.exports = function() {
     var codepens = document.querySelectorAll('div.codepen');
@@ -135,7 +135,7 @@ module.exports = function() {
         }
     });
 
-    if (!isRegistred) {
+    if (!isRegistered) {
         //Register PrismJS "Run" custom button
         Prism.plugins.toolbar.registerButton("run-code", function(env) {
             var demoWrapper = findDemoWrapper(env.element);
@@ -146,6 +146,7 @@ module.exports = function() {
                 var btn = document.createElement("button");
                 btn.innerHTML = "Run";
                 btn.setAttribute("data-run", "");
+                isRegistered = true;
                 return btn;
             }
         });
