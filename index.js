@@ -138,6 +138,7 @@ module.exports = function() {
     if (!isRegistered) {
         //Register PrismJS "Run" custom button
         Prism.plugins.toolbar.registerButton("run-code", function(env) {
+            isRegistered = true;
             var demoWrapper = findDemoWrapper(env.element);
             var pre = env.element.parentElement;
             var hasRunBtn = demoWrapper ? demoWrapper.getAttribute("data-has-run") : pre.getAttribute("data-has-run");
@@ -146,7 +147,6 @@ module.exports = function() {
                 var btn = document.createElement("button");
                 btn.innerHTML = "Run";
                 btn.setAttribute("data-run", "");
-                isRegistered = true;
                 return btn;
             }
         });
