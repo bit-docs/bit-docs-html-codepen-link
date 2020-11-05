@@ -1,12 +1,6 @@
 var types = require("./codepen-data");
+var specials = require("./specials");
 var languageHTML = /language-(\w+)/;
-
-var assign = Object.assign || function(d, s) {
-    for(var prop in s) {
-        d[prop] = s[prop];
-    }
-    return d;
-};
 
 function cleanCodePenData(data) {
     if(docObject.codepen) {
@@ -14,6 +8,7 @@ function cleanCodePenData(data) {
             if(data.html) {
                 data.html = data.html.split(replacement[0]).join(replacement[1]);
             }
+
             if(data.js) {
                 data.js = data.js.split(replacement[0]).join(replacement[1]);
             }
@@ -22,23 +17,23 @@ function cleanCodePenData(data) {
 }
 
 function createCodePen(data) {
-
     var JSONstring = JSON.stringify(data);
 
-    var form =  '<form action="https://codepen.io/pen/define" method="POST" target="_blank">' +
-        '<input type="hidden" name="data">' +
-    '</form>';
+    var form =
+        '<form action="https://codepen.io/pen/define" method="POST" target="_blank">' +
+            '<input type="hidden" name="data">' +
+        '</form>';
 
     var div = document.createElement("div");
     div.innerHTML = form;
     div.firstChild.firstChild.value = JSONstring;
     document.body.appendChild(div);
     div.firstChild.submit();
+
     setTimeout(function(){
         document.body.removeChild(div);
     },10);
 }
-
 
 var browserMatches = document.body.matches || document.body.msMatchesSelector;
 function matches(selector) {
@@ -55,29 +50,12 @@ function matches(selector) {
     }
 }
 
-
-function findPre(start) {
-    while(start) {
-        if(start.nodeName === "PRE") {
-            return start;
-        }
-        if(start.querySelector) {
-            var pre = start.querySelector("pre");
-            if(pre) {
-                return pre;
-            }
-        }
-
-        // needs to be previousSibling for zombie
-        start = start.previousSibling;
-    }
-}
-
 function findSelector(start, selector) {
     while(start) {
         if(matches.call(start, selector)) {
             return start;
         }
+
         if(start.querySelector) {
             var pre = start.querySelector(selector);
             if(pre) {
@@ -95,6 +73,7 @@ function findDemoWrapper(el) {
         if(matches.call(el.parentNode, '.demo_wrapper')) {
             return el.parentNode;
         }
+
         el = el.parentNode;
     }
 }
@@ -104,6 +83,7 @@ function findPreForToolbarBtn(el) {
         if (el.nodeName === "PRE") {
             return el;
         }
+
         if (matches.call(el, '.toolbar')) {
             el = findSelector(el, 'pre');
         } else {
@@ -118,6 +98,7 @@ function getStylesFromIframe(iframe) {
     styles.forEach(function(style){
         cssText += style.innerHTML;
     });
+
     return cssText;
 }
 
@@ -126,11 +107,17 @@ var isRegistered = false;
 module.exports = function() {
     var codepens = document.querySelectorAll('div.codepen');
     //remove the old codepen links
-    codepens.forEach(function(codepen, i){
+    codepens.forEach(function(codepen){
         var wrapper = findSelector(codepen, "pre, .demo_wrapper");
+        var special = codepen.getAttribute("data-codepen");
+
         //the CodePen iframe wrapper has ".codepen" class too
         if (wrapper) {
             wrapper.setAttribute('data-has-run', true);
+            if (special) {
+                wrapper.setAttribute('data-codepen', special);
+            }
+
             codepen.parentNode.removeChild(codepen);
         }
     });
@@ -142,18 +129,22 @@ module.exports = function() {
             var demoWrapper = findDemoWrapper(env.element);
             var pre = env.element.parentElement;
             var hasRunBtn = demoWrapper ? demoWrapper.getAttribute("data-has-run") : pre.getAttribute("data-has-run");
+
             //prevent other demos without codepen link to register Run button
             if (hasRunBtn) {
                 var btn = document.createElement("button");
                 btn.innerHTML = "Run";
                 btn.setAttribute("data-run", "");
+
                 return btn;
             }
         });
+
         document.body.addEventListener('click', function (ev) {
             if (ev.target.getAttribute('data-run') != null) {
                 var btn = ev.target;
                 var demoWrapper = findDemoWrapper(btn);
+
                 if (!demoWrapper) {
                     var preElement = findPreForToolbarBtn(btn);
                     var codeElement = preElement.querySelector("code");
@@ -168,6 +159,12 @@ module.exports = function() {
                     if(data.html) {
                         data.html = data.html.trim();
                     }
+
+                    var special = preElement.getAttribute("data-codepen");
+                    if (special && specials[special]) {
+                        specials[special](data);
+                    }
+
                     if(data) {
                         cleanCodePenData(data);
                         if(window.CREATE_CODE_PEN) {
@@ -175,17 +172,23 @@ module.exports = function() {
                         } else {
                             createCodePen(data);
                         }
-
                     } else {
                         console.warn("Unable to create a codepen for this demo");
                     }
                 }
+
                 if (demoWrapper && matches.call(demoWrapper, '.demo_wrapper')) {
                     var htmlCode = demoWrapper.querySelector('[data-for=html] code');
                     var htmlText = htmlCode ? htmlCode.textContent.trim() : '';
                     var jsCode = demoWrapper.querySelector('[data-for=js] code');
                     var jsText = jsCode ? jsCode.textContent.trim() : '';
                     var cssText = getStylesFromIframe(demoWrapper.querySelector('iframe'));
+
+                    var special = demoWrapper.getAttribute("data-codepen");
+                    if (special && specials[special]) {
+                        specials[special](data);
+                    }
+
                     var codePen = {
                         html: htmlText,
                         js: jsText,
@@ -193,6 +196,7 @@ module.exports = function() {
                         editors: '1011',
                         css: cssText.trim()
                     };
+
                     cleanCodePenData(codePen);
                     if (window.CREATE_CODE_PEN) {
                         CREATE_CODE_PEN(codePen);
