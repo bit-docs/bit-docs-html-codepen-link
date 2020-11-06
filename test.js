@@ -102,12 +102,6 @@ describe("bit-docs-html-codepen-link", function() {
 						js: 'import {DefineMap} from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nconsole.log( myCounter.count ) //-> 1',
 						js_module: true,
 						editors: '0011'
-					},
-					{
-						html: '<div id="root"></div>\n<script crossorigin src="//unpkg.com/react@16/umd/react.development.js"></script>\n<script crossorigin src="//unpkg.com/react-dom@16/umd/react-dom.development.js"></script>\n',
-						js: 'import {DefineMap} from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nconsole.log( myCounter.count ) //-> 1',
-						js_module: true,
-						editors: '0011'
 					}
 				]);
 
