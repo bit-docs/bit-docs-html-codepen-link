@@ -21,6 +21,21 @@ my-app {color: "green";}
 ```
 <div class='codepen'></div>
 
+### with React
+
+```html
+<my-app></my-app>
+
+<script type="module">
+import { Component } from "can";
+Component
+</script>
+<style>
+my-app {color: "green";}
+</style>
+```
+<div class='codepen' data-codepen='react'></div>
+
 ## Straight JS
 
 ```js
@@ -31,3 +46,14 @@ console.log( myCounter.count ) //-> 1
 
 <div class='demo_wrapper' data-demo-src='foo.html'></div>
 <div class='codepen'></div>
+
+### with React
+
+```js
+import {DefineMap} from "can";
+console.log( myCounter.count ) //-> 1
+```
+<div class='codepen' data-codepen='react></div>
+
+<div class='demo_wrapper' data-demo-src='foo.html'></div>
+<div class='codepen' data-codepen='react'></div>

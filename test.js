@@ -51,17 +51,28 @@ describe("bit-docs-html-codepen-link", function() {
 		}).then(function() {
 			open("temp/index.html", function(browser, close) {
 				var doc = browser.window.document;
+
 				var createCallData = [];
 				browser.window.CREATE_CODE_PEN = function(data) {
 					createCallData.push(data);
 				};
+
 				var toolbars = doc.querySelectorAll('.toolbar');
 				toolbars.forEach(function(toolbar) {
 					var btn = toolbar.children[toolbar.children.length - 1].querySelector('button');
 					btn.click();
 				});
-				assert.deepEqual(createCallData, [{
+
+				assert.deepEqual(createCallData, [
+					{
 						html: '<my-app></my-app>',
+						js: 'import { Component } from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nComponent',
+						js_module: true,
+						editors: '1011',
+						css: 'my-app {color: "green";}'
+					},
+					{
+						html: '<div id="root"></div>\n<script crossorigin src="//unpkg.com/react@16/umd/react.development.js"></script>\n<script crossorigin src="//unpkg.com/react-dom@16/umd/react-dom.development.js"></script>\n<my-app></my-app>',
 						js: 'import { Component } from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nComponent',
 						js_module: true,
 						editors: '1011',
@@ -85,7 +96,14 @@ describe("bit-docs-html-codepen-link", function() {
 						html: '<h1>Hi There!</h1>',
 						js: 'var code = "code";',
 						js_module: true
-					}]);
+					},
+					{
+						html: '<div id="root"></div>\n<script crossorigin src="//unpkg.com/react@16/umd/react.development.js"></script>\n<script crossorigin src="//unpkg.com/react-dom@16/umd/react-dom.development.js"></script>\n',
+						js: 'import {DefineMap} from "//unpkg.com/can@^5.0.0-pre.1/core.mjs";\nconsole.log( myCounter.count ) //-> 1',
+						js_module: true,
+						editors: '0011'
+					}
+				]);
 
 				close();
 				done();
@@ -143,7 +161,6 @@ describe("bit-docs-html-codepen-link", function() {
 		assert.equal(data.css.trim(), '@custom-color: #454545;');
 		assert.equal(data.css_pre_processor, 'less');
 	});
-
 
 	it.skip("is able to create external js", function(){
 		var data = codepenData.html(`
